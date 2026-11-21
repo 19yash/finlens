@@ -48,10 +48,24 @@ GET https://www.nseindia.com/api/annual-reports?index=equities&symbol=TCS
 - Recent years are `.pdf`; FY24 and earlier are often `.zip` (PDF inside).
 - Files are downloadable directly; the `.in` file host timed out from here, so
   rewrite `nsearchives.nseindia.in` → `nsearchives.nseindia.com`.
-- Checked: TCS (10 years, FY17–FY26) and the small-cap 20 Microns (10 years).
+- A year can have a `"Revised"` filing next to the `"New"` one (HDFC Bank FY25);
+  the revised one wins, then the latest `broadcast_dttm` (often `"-"` for old filings).
+- ZIPs can hold the report in several PDFs; they are merged in file-name order.
+- NSE's copy can differ slightly from the company's (TCS FY25: 337 pages on NSE,
+  336 on tcs.com). Citations use the stored file's page numbers.
+- Checked: TCS (FY10–FY26), HDFC Bank, and the small-cap 20 Microns.
+
+## Checking the downloaded file (`ingestion/verify.py`)
+
+Before a report is accepted, its first 12 pages (text squashed to undo letter
+spacing and broken digit glyphs) must name the company, or the ISIN must appear
+anywhere, and the fiscal year must be the most cited. A tie with the previous year
+is allowed: HDFC Bank FY25 cites 2024 and 2025 seven times each. A file without a
+`%PDF` header (e.g. an HTML error page) is rejected. Scanned PDFs with no text layer
+are accepted with `needs_review = true`.
 
 ## Still open
 
 - XBRL: NSE's "Annual Reports XBRL" and "Integrated Filing XBRL" pages could give
   structured figures without table parsing. Not checked yet.
-- Rate limit to use (start at 1 request every 2 s).
+- Rate limit: 1 request every 2 s per host (`http_min_interval`); fine so far.

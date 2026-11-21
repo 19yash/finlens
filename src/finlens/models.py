@@ -57,7 +57,10 @@ class Report(Base):
     sha256: Mapped[str | None] = mapped_column(String(64), unique=True)
     file_path: Mapped[str | None] = mapped_column(Text)
     page_count: Mapped[int | None]
-    # queued -> downloading -> parsing -> embedding -> ready | failed
+    file_size: Mapped[int | None]  # bytes
+    # True when the PDF couldn't be checked for company and year (scanned, no text layer)
+    needs_review: Mapped[bool] = mapped_column(default=False, server_default="false")
+    # queued -> downloading -> downloaded -> parsing -> embedding -> ready | failed
     status: Mapped[str] = mapped_column(String(16), default="queued")
     error: Mapped[str | None] = mapped_column(Text)
     created_at: Mapped[datetime] = mapped_column(server_default=func.now())

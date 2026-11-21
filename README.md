@@ -3,7 +3,7 @@
 Plain-English questions about NSE-listed Indian companies, answered from their
 annual reports with every figure cited to a PDF page.
 
-Status: Day 1 — repo, schema, company list and resolver.
+Status: Day 2 — NSE report fetcher.
 
 ## Setup
 
@@ -15,6 +15,7 @@ uv run alembic upgrade head                   # create / update the schema
 uv run python -m finlens.companies.nse_master # load ~2,600 NSE companies
 uv run uvicorn finlens.main:app --reload
 curl "localhost:8000/companies/resolve?q=Tata%20Consultancy"
+uv run python -m finlens.ingestion.fetcher TCS 2025   # download + verify one report
 uv run pytest
 ```
 
@@ -31,6 +32,9 @@ src/finlens/
                                 (robots.txt, per-host rate limit, retries, streaming)
   repositories/                 data access per table; never commits, the caller does
   companies/                    NSE company list + name resolver
+  sources/                      report sources (NseReportSource), one adapter each
+  ingestion/fetcher.py          find -> download -> unzip -> verify -> reports row
+  ingestion/verify.py           is this PDF the right company and fiscal year?
   ingestion/ocr/                GLM-OCR on Modal + reconciliation (from the rag research)
 docs/sources.md                 where reports come from and why
 ```

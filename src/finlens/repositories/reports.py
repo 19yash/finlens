@@ -3,7 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from finlens.models import Report
 
-STATUSES = ("queued", "downloading", "parsing", "embedding", "ready", "failed")
+STATUSES = ("queued", "downloading", "downloaded", "parsing", "embedding", "ready", "failed")
 
 
 class ReportRepository:
